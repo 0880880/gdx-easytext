@@ -14,11 +14,9 @@ apply plugin: 'java-library'
 apply plugin: 'com.vanniktech.maven.publish'
 
 //Obviously, change the next line to match your project name.
-def projectName = 'libgdx-library-template'
+def projectName = 'gdx-easytext'
 
-//Change this to whatever Maven Central group you might publish to,
-//which is probably not this one if you aren't Tommy Ettinger.
-group 'com.github.tommyettinger'
+group 'com.github.zeroeighteightzero'
 
 version "$VERSION_NAME" // You can set the version in gradle.properties .
 
@@ -94,7 +92,9 @@ dependencies {
 // Libraries that don't use libGDX directly can change the next line
 // from `api` to `testImplementation` .
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     testImplementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
     testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     testImplementation "junit:junit:4.13.2"
 }
