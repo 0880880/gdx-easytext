@@ -63,7 +63,6 @@ public class Font implements Disposable {
 
     public Vector2 calculateTextSize(String text, int fontSize, Vector2 v) {
 
-        BitmapFont font = getFont(fontSize);
         GlyphLayout glyphLayout = new GlyphLayout(font, text);
         return v.set(glyphLayout.width, glyphLayout.height);
 
