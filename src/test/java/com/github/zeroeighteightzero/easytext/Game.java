@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Game implements ApplicationListener {
@@ -15,8 +16,11 @@ public class Game implements ApplicationListener {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        font = new Font(Gdx.files.internal("Roboto-Black.ttf"), 20);
+        font = new Font(Gdx.files.internal("DMSerifDisplay-Regular.ttf"), 15);
+        font.sizeTolerance = 16;
     }
+
+    float time = 0;
 
     @Override
     public void resize(int width, int height) {
@@ -27,11 +31,13 @@ public class Game implements ApplicationListener {
     public void render() {
         ScreenUtils.clear(Color.WHITE);
 
+        time += Gdx.graphics.getDeltaTime();
+
         batch.begin();
 
-        for (int i = 0; i < 5; i++) {
-            font.draw(batch, "Hello, world!", 8 * i, 100, 100 + i * (i * 4), Color.BLACK);
-        }
+        int fontSize = (int) ((MathUtils.sin(time) + 1) * 60 + 12);
+
+        font.draw(batch, "Hello, world!", fontSize, 600, 600, Color.BLACK);
 
         batch.end();
 
