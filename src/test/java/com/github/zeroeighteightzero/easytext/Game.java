@@ -2,6 +2,7 @@ package com.github.zeroeighteightzero.easytext;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,6 +19,14 @@ public class Game implements ApplicationListener {
         batch = new SpriteBatch();
         font = new Font(Gdx.files.internal("DMSerifDisplay-Regular.ttf"), 15);
         font.sizeTolerance = 16;
+
+        TextInput textInput = new TextInput();
+        textInput.text = "Hamburger";
+        textInput.focused = true;
+        textInput.setCaretPosition(3);
+        textInput.caretPositionStart = 2;
+        textInput.keyDown(Input.Keys.BACKSPACE);
+        System.out.println(textInput.text);
     }
 
     float time = 0;
