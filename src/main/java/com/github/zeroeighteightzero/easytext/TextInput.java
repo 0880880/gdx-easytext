@@ -22,6 +22,11 @@ public class TextInput extends InputAdapter {
     private boolean deleteKey = false;
     private boolean homeKey = false;
     private boolean endKey = false;
+    private boolean insertKey = false;
+    private boolean aKey = false;
+    private boolean cKey = false;
+    private boolean xKey = false;
+    private boolean vKey = false;
 
     public void setCaretPosition(int caretPosition) {
         this.caretPositionStart = caretPosition;
@@ -86,22 +91,37 @@ public class TextInput extends InputAdapter {
                 text = text.substring(0, caretPositionStart) + text.substring(caretPositionEnd != caretPositionStart ? caretPositionEnd : caretPositionEnd + 1);
                 deleteKey = true;
             }
-            if (ctrlKey && keycode == Input.Keys.C && caretPositionStart != caretPositionEnd) {
-                Gdx.app.getClipboard().setContents(text.substring(caretPositionStart, caretPositionEnd));
-            }
-            if (ctrlKey && keycode == Input.Keys.X && caretPositionStart != caretPositionEnd) {
-                if (Gdx.app.getClipboard().hasContents()) {
-                    text = text.substring(0,caretPositionStart) + Gdx.app.getClipboard().getContents() + text.substring(caretPositionEnd);
-                    setCaretPosition(caretPositionStart);
+            if (ctrlKey) {
+                if (keycode == Input.Keys.C && caretPositionStart != caretPositionEnd && !cKey) {
+                    Gdx.app.getClipboard().setContents(text.substring(caretPositionStart, caretPositionEnd));
+                    cKey = true;
+                }
+                if (keycode == Input.Keys.INSERT && caretPositionStart != caretPositionEnd && !insertKey) {
+                    Gdx.app.getClipboard().setContents(text.substring(caretPositionStart, caretPositionEnd));
+                    insertKey = true;
+                }
+                if (keycode == Input.Keys.X && caretPositionStart != caretPositionEnd && !xKey) {
+                    if (Gdx.app.getClipboard().hasContents()) {
+                        text = text.substring(0,caretPositionStart) + Gdx.app.getClipboard().getContents() + text.substring(caretPositionEnd);
+                        setCaretPosition(caretPositionStart);
+                    }
+                    xKey = true;
+                }
+                if (keycode == Input.Keys.V && !vKey) {
+                    text = text.substring(0,caretPositionStart) + text.substring(caretPositionEnd);
+                    setCaretPosition(caretPositionStart + 1);
+                    vKey = true;
+                }
+                if (keycode == Input.Keys.A && !aKey) {
+                    caretPositionStart = 0;
+                    caretPositionEnd = text.length() - 1;
+                    aKey = true;
                 }
             }
-            if (ctrlKey && keycode == Input.Keys.V) {
+            if (shiftKey && keycode == Input.Keys.INSERT && !insertKey) {
                 text = text.substring(0,caretPositionStart) + text.substring(caretPositionEnd);
                 setCaretPosition(caretPositionStart + 1);
-            }
-            if (ctrlKey && keycode == Input.Keys.A) {
-                caretPositionStart = 0;
-                caretPositionEnd = text.length() - 1;
+                insertKey = true;
             }
 
             caretPositionStart = Math.max(Math.min(caretPositionStart, text.length() - 1), 0);
@@ -125,6 +145,16 @@ public class TextInput extends InputAdapter {
                 backspaceKey = false;
             if (keycode == Input.Keys.FORWARD_DEL && deleteKey)
                 deleteKey = false;
+            if (keycode == Input.Keys.C && cKey)
+                cKey = false;
+            if (keycode == Input.Keys.X && xKey)
+                xKey = false;
+            if (keycode == Input.Keys.V && vKey)
+                vKey = false;
+            if (keycode == Input.Keys.A && aKey)
+                aKey = false;
+            if (keycode == Input.Keys.INSERT && insertKey)
+                insertKey = false;
             if (keycode == Input.Keys.SHIFT_LEFT || keycode == Input.Keys.SHIFT_RIGHT) shiftKey = false;
             if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT) ctrlKey = false;
         }
