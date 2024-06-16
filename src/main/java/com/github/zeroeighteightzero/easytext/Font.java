@@ -17,7 +17,7 @@ public class Font implements Disposable {
 
     private FreeTypeFontGenerator generator;
 
-    private HashMap<Integer, BitmapFont> fonts = new HashMap<>();
+    private HashMap<FontData, BitmapFont> fonts = new HashMap<>();
 
     public int sizeTolerance = 0;
 
@@ -32,20 +32,13 @@ public class Font implements Disposable {
 
     public void createFont(FreeTypeFontGenerator.FreeTypeFontParameter parameter) {
         BitmapFont font = generator.generateFont(parameter);
-        fonts.put(parameter.size, font);
+        font.setUseIntegerPositions(true);
+        fonts.put(new FontData(parameter), font);
     }
 
-    public void createFont(int fontSize) {
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = fontSize;
-        parameter.color = Color.WHITE;
-        BitmapFont font = generator.generateFont(parameter);
-        fonts.put(parameter.size, font);
-    }
-
-    public void createFont(int... fontSizes) {
-        for (int size : fontSizes) {
-            createFont(size);
+    public void createFont(FreeTypeFontGenerator.FreeTypeFontParameter... parameters) {
+        for (FreeTypeFontGenerator.FreeTypeFontParameter parameter : parameters) {
+            createFont(parameter);
         }
     }
 
@@ -55,16 +48,17 @@ public class Font implements Disposable {
         if (!fonts.containsKey(fontSize)) {
             boolean foundFont = false;
             if (sizeTolerance != 0) {
-                int nearestSize = 0;
-                for (Integer i : fonts.keySet()) {
-                    if (fontSize > i - sizeTolerance && fontSize < i + sizeTolerance && (nearestSize - fontSize) < (i - fontSize)) {
-                        nearestSize = i;
+                FontData nearestData = null;
+                for (FontData data : fonts.keySet()) {
+                    if (fontSize > data.size - sizeTolerance && fontSize < data.size + sizeTolerance && ((nearestData != null ? nearestData.size : 0) - fontSize) < (data.size - fontSize)) {
+                        nearestData = data;
                         foundFont = true;
                     }
                 }
-                this.fontSize = nearestSize;
-                if (nearestSize != 0)
-                    return fonts.get(nearestSize);
+                if (nearestData != null) {
+                    this.fontSize = nearestData.size;
+                    return fonts.get(nearestData);
+                }
             }
             if (!foundFont) {
                 FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -74,7 +68,7 @@ public class Font implements Disposable {
             }
         }
         this.fontSize = fontSize;
-        return fonts.get(fontSize);
+        return fonts.get(new FontData(fontSize));
     }
 
     public void draw(Batch batch, String text, int fontSize, float x, float y, Color color) {
