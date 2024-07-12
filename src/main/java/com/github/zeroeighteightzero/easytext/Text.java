@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align;
 public class Text {
 
     private Vector2 position = new Vector2();
-    private Font font;
+    private FontFace fontFace;
     private int fontSize = 16;
     private float maxWidth = Integer.MAX_VALUE;
     private boolean wrap = false;
@@ -16,8 +16,8 @@ public class Text {
     private String text;
     private int align = Align.center;
 
-    public Text(Font font) {
-        this.font = font;
+    public Text(FontFace fontFace) {
+        this.fontFace = fontFace;
     }
 
     public void setPosition(float x, float y) {
@@ -40,8 +40,8 @@ public class Text {
         this.align = align;
     }
 
-    public void setFont(Font font) {
-        this.font = font;
+    public void setFont(FontFace fontFace) {
+        this.fontFace = fontFace;
     }
 
     public void setMaxWidth(float maxWidth) {
@@ -54,7 +54,7 @@ public class Text {
 
     public void draw(Batch batch) {
 
-        font.draw(batch, text, fontSize, position.x, position.y, color, maxWidth, wrap, align);
+        fontFace.draw(batch, text, fontSize, position.x, position.y, color, maxWidth, wrap, align);
 
     }
 
