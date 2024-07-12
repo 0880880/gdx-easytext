@@ -39,7 +39,7 @@ public class Game extends ApplicationAdapter {
         batch = new SpriteBatch();
         viewport = new ScreenViewport();
 
-        fontFace = new FontFace(Gdx.files.internal("DMSerifDisplay-Regular.ttf"), 32).sizeTolerance(32);
+        fontFace = new FontFace(Gdx.files.internal("DMSerifDisplay-Regular.ttf"), 32).sizeTolerance(32); // https://fonts.google.com/specimen/DM+Serif+Display
 
     }
 
