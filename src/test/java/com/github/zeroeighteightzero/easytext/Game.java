@@ -1,69 +1,106 @@
 package com.github.zeroeighteightzero.easytext;
 
-import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class Game implements ApplicationListener {
+public class Game extends ApplicationAdapter {
 
-    SpriteBatch batch;
+    private SpriteBatch batch;
+    private ScreenViewport viewport;
 
-    Font font;
+    private FontFace fontFace;
+
+    private float x = 0;
+    private float y = 0;
+    private float dirX = 1;
+    private float dirY = 1;
+    private boolean fullscreen = false;
+
+    private Color color = randomColor();
+
+    private int fontSize = 72;
+    private boolean allowOverflow = false;
+
+    private Color randomColor() {
+        return new Color(1,1,1,1).fromHsv(MathUtils.random(0,360), .6f, 1f);
+    }
 
     @Override
     public void create() {
+
         batch = new SpriteBatch();
-        font = new Font(Gdx.files.internal("DMSerifDisplay-Regular.ttf"), 15);
-        font.sizeTolerance = 16;
+        viewport = new ScreenViewport();
 
-        TextInput textInput = new TextInput();
-        textInput.text = "Hamburger";
-        textInput.focused = true;
-        textInput.setCaretPosition(3);
-        textInput.caretPositionStart = 2;
-        textInput.keyDown(Input.Keys.BACKSPACE);
-        System.out.println(textInput.text);
+        fontFace = new FontFace(Gdx.files.internal("DMSerifDisplay-Regular.ttf"), 32).sizeTolerance(32);
+
     }
-
-    float time = 0;
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width, height);
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(Color.WHITE);
 
-        time += Gdx.graphics.getDeltaTime();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {
+            if (fullscreen) Gdx.graphics.setWindowedMode(800, 600);
+            else Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+            fullscreen = !fullscreen;
+            x = 0;
+            y = 0;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) allowOverflow = !allowOverflow;
 
+        ScreenUtils.clear(Color.BLACK);
+
+        viewport.apply();
+
+        batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
 
-        int fontSize = (int) ((MathUtils.sin(time) + 1) * 60 + 12);
+        x += dirX * 8;
+        y += dirY * 8;
 
-        font.draw(batch, "Hello, world!", fontSize, 600, 600, Color.BLACK);
+        GlyphLayout layout = fontFace.draw(batch, "Hello, world!", fontSize, x, y, color, 0, false, Align.center);
+
+        if (x + layout.width / 2f >= viewport.getWorldWidth() / 2f) {
+            dirX = -dirX;
+            color = randomColor();
+            fontSize++;
+        }
+        if (y >= viewport.getWorldHeight() / 2f) {
+            dirY = -dirY;
+            color = randomColor();
+            fontSize++;
+        }
+        if (x - layout.width / 2f <= -viewport.getWorldWidth() / 2f) {
+            dirX = -dirX;
+            color = randomColor();
+            fontSize--;
+        }
+        if (y - layout.height <= -viewport.getWorldHeight() / 2f) {
+            dirY = -dirY;
+            color = randomColor();
+            fontSize++;
+        }
+
+        if (!allowOverflow && fontSize > 96) fontSize = 72;
 
         batch.end();
 
     }
 
     @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
     public void dispose() {
-
+        fontFace.dispose();
     }
 }
