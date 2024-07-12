@@ -1,3 +1,34 @@
+import org.gradle.internal.os.OperatingSystem
+
+project.ext.lwjglVersion = "3.3.4-SNAPSHOT"
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.FREE_BSD:
+        project.ext.lwjglNatives = "natives-freebsd"
+        break
+    case OperatingSystem.LINUX:
+        project.ext.lwjglNatives = "natives-linux"
+        def osArch = System.getProperty("os.arch")
+        if (osArch.startsWith("arm") || osArch.startsWith("aarch64")) {
+            project.ext.lwjglNatives += osArch.contains("64") || osArch.startsWith("armv8") ? "-arm64" : "-arm32"
+        } else if  (osArch.startsWith("ppc")) {
+            project.ext.lwjglNatives += "-ppc64le"
+        } else if  (osArch.startsWith("riscv")) {
+            project.ext.lwjglNatives += "-riscv64"
+        }
+        break
+    case OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+        break
+    case OperatingSystem.WINDOWS:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.contains("64")
+                ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+                : "natives-windows-x86"
+        break
+}
+
+
 buildscript {
     repositories {
         mavenLocal()
@@ -82,8 +113,6 @@ repositories {
     google()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
-    // JitPack is a good repo to have if you depend on commit versions.
-    // Having the below repo might cause problems if uploading to Maven Central.
     maven { url 'https://jitpack.io' }
 }
 
@@ -97,4 +126,14 @@ dependencies {
     testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     testImplementation "junit:junit:4.13.2"
+
+    //implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    //implementation "org.lwjgl:lwjgl"
+    //implementation "org.lwjgl:lwjgl-freetype"
+    //implementation "org.lwjgl:lwjgl-harfbuzz"
+    //runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    //runtimeOnly "org.lwjgl:lwjgl-freetype::$lwjglNatives"
+    //runtimeOnly "org.lwjgl:lwjgl-harfbuzz::$lwjglNatives"
+
 }
